@@ -13,5 +13,5 @@ class MataKuliah(Base):
     tahun_akademik = Column(String(4), nullable=False)  # contoh: 2025
     kelas = Column(String(5), nullable=False)
 
-    kontrak = relationship('Kontrak', back_populates='mahasiswa')
+    kontrak = relationship('Kontrak', back_populates='mata_kuliah')
     jadwal = relationship('JadwalPerkuliahan', back_populates='mata_kuliah')

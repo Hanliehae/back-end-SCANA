@@ -71,3 +71,4 @@ def delete_mahasiswa(nim):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Gagal menghapus mahasiswa", "error": str(e)}), 500
+

@@ -49,7 +49,7 @@ def register_mahasiswa():
     email = data.get('email')
     no_telepon = data.get('no_telepon')
     password = data.get('password')
-
+    
     if Mahasiswa.query.filter_by(email=email).first():
         return jsonify({"message": "Email sudah terdaftar"}), 409
 

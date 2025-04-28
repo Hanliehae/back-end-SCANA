@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
 from dotenv import load_dotenv
 import os
 
@@ -21,3 +21,6 @@ engine = create_engine(DATABASE_URL)
 # Session dan Base ORM
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+db_session=scoped_session(SessionLocal)
+Base.query= db_session.query_property()
