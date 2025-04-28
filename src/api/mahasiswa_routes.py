@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.database.models.mahasiswa import Mahasiswa
-from src.app import SessionLocal
+from src.app import db  # GANTI: pakai db, bukan SessionLocal
 
 mahasiswa_bp = Blueprint('mahasiswa_bp', __name__)
 
@@ -19,7 +19,6 @@ def create_mahasiswa():
     admin_required()
     data = request.get_json()
 
-    session = SessionLocal()
     try:
         new_mahasiswa = Mahasiswa(
             nim=data['nim'],
@@ -29,24 +28,21 @@ def create_mahasiswa():
         )
         new_mahasiswa.set_password(data['password'])  # Set password
 
-        session.add(new_mahasiswa)
-        session.commit()
+        db.session.add(new_mahasiswa)
+        db.session.commit()
 
         return jsonify({"message": "Mahasiswa berhasil dibuat"}), 201
     except Exception as e:
-        session.rollback()
+        db.session.rollback()
         return jsonify({"message": "Gagal membuat mahasiswa", "error": str(e)}), 500
-    finally:
-        session.close()
 
 # List Mahasiswa
 @mahasiswa_bp.route('/', methods=['GET'])
 @jwt_required()
 def list_mahasiswa():
     admin_required()
-    session = SessionLocal()
     try:
-        mahasiswa_list = session.query(Mahasiswa).all()
+        mahasiswa_list = Mahasiswa.query.all()
         result = []
         for mhs in mahasiswa_list:
             result.append({
@@ -56,25 +52,22 @@ def list_mahasiswa():
                 "no_telepon": mhs.no_telepon
             })
         return jsonify(result), 200
-    finally:
-        session.close()
+    except Exception as e:
+        return jsonify({"message": "Gagal mengambil data mahasiswa", "error": str(e)}), 500
 
 # Delete Mahasiswa
 @mahasiswa_bp.route('/<nim>', methods=['DELETE'])
 @jwt_required()
 def delete_mahasiswa(nim):
     admin_required()
-    session = SessionLocal()
     try:
-        mahasiswa = session.query(Mahasiswa).get(nim)
+        mahasiswa = Mahasiswa.query.get(nim)
         if not mahasiswa:
             return jsonify({"message": "Mahasiswa tidak ditemukan"}), 404
 
-        session.delete(mahasiswa)
-        session.commit()
+        db.session.delete(mahasiswa)
+        db.session.commit()
         return jsonify({"message": "Mahasiswa berhasil dihapus"}), 200
     except Exception as e:
-        session.rollback()
+        db.session.rollback()
         return jsonify({"message": "Gagal menghapus mahasiswa", "error": str(e)}), 500
-    finally:
-        session.close()
