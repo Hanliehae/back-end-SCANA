@@ -27,8 +27,8 @@ def create_app():
     jwt.init_app(app)
 
     # import dan register blueprint
-    from src.api.auth_routes import auth_bp
-    from src.api.mahasiswa_routes import mahasiswa_bp
+    from src.api.routes.auth_routes import auth_bp
+    from src.api.routes.mahasiswa_routes import mahasiswa_bp
     # from src.api.kontrak_routes import kontrak_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
